@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import noopy.client.testosm.cache.CacheManager
-import noopy.client.testosm.components.MapMonitor
+import noopy.client.testosm.components.map.MapMonitor
 import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.OverlayItem
@@ -16,7 +16,6 @@ class MapFragment : Fragment() {
 
     private var mapComponent: MapMonitor? = null
     private var currentContext: Context? = null
-    private var overlayList = ArrayList<OverlayItem>()
 
     private var currentPosition: GeoPoint = GeoPoint(0.0,0.0)
 

@@ -1,4 +1,4 @@
-package noopy.client.testosm.components
+package noopy.client.testosm.components.map
 
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
@@ -126,6 +126,7 @@ class MapMonitor : MapView {
                 }
             }
             matcher.appendTail(output)
+            Log.i("MAP URL", output.toString())
             return output.toString()
         }
     }
