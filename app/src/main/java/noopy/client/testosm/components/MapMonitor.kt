@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.os.Handler
 import android.util.AttributeSet
+import android.util.Log
 import noopy.client.testosm.R
 import noopy.client.testosm.service.MarkerService
 import org.osmdroid.tileprovider.MapTileProviderBase
@@ -55,7 +56,8 @@ class MapMonitor : MapView {
     fun init() {
 
         setTileSource(object : OnlineTileSourceBase("ArcGis", 0, 18, 256, "",
-                arrayOf("https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}")) {
+               // arrayOf("https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}")) {
+               arrayOf("https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}")) {
             override fun getTileURLString(pMapTileIndex: Long): String {
 
                 return buildTileUrl(baseUrl, MapTileIndex.getX(pMapTileIndex), MapTileIndex.getY(pMapTileIndex), MapTileIndex.getZoom(pMapTileIndex))
@@ -114,13 +116,13 @@ class MapMonitor : MapView {
             while (matcher.find()) {
                 val key = matcher.group(1)
                 if (key == "x") {
-                    matcher.appendReplacement(output, "{\$x}")
+                    matcher.appendReplacement(output, "$x")
                 }
                 if (key == "y") {
-                    matcher.appendReplacement(output, "{\$y}")
+                    matcher.appendReplacement(output, "$y")
                 }
                 if (key == "z") {
-                    matcher.appendReplacement(output, "{\$z}")
+                    matcher.appendReplacement(output, "$z")
                 }
             }
             matcher.appendTail(output)
