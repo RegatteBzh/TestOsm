@@ -5,6 +5,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Handler
 import android.util.AttributeSet
 import android.util.Log
+import android.view.KeyEvent
 import noopy.client.testosm.R
 import noopy.client.testosm.service.MarkerService
 import org.osmdroid.tileprovider.MapTileProviderBase
@@ -126,7 +127,6 @@ class MapMonitor : MapView {
                 }
             }
             matcher.appendTail(output)
-            Log.i("MAP URL", output.toString())
             return output.toString()
         }
     }

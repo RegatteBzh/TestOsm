@@ -3,12 +3,17 @@ package noopy.client.testosm
 import android.app.Fragment
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import noopy.client.testosm.cache.CacheManager
 import noopy.client.testosm.components.map.MapMonitor
+import noopy.client.testosm.components.map.Windy
 import org.osmdroid.config.Configuration
+import org.osmdroid.events.MapListener
+import org.osmdroid.events.ScrollEvent
+import org.osmdroid.events.ZoomEvent
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.OverlayItem
 
@@ -16,6 +21,7 @@ class MapFragment : Fragment() {
 
     private var mapComponent: MapMonitor? = null
     private var currentContext: Context? = null
+    private var windy: Windy? = null
 
     private var currentPosition: GeoPoint = GeoPoint(0.0,0.0)
 
@@ -36,6 +42,20 @@ class MapFragment : Fragment() {
         updateMarkerPosition(currentPosition)
 
         mapComponent?.centerTo(currentPosition)
+
+        if (mapComponent != null) windy = Windy(mapComponent!!)
+
+        mapComponent!!.addMapListener(object : MapListener {
+            override fun onZoom(evt: ZoomEvent): Boolean {
+                Log.i("MAP", "Zoom " + evt.toString())
+                return true
+            }
+
+            override fun onScroll(evt: ScrollEvent): Boolean {
+                Log.i("MAP", "Scroll " + evt.toString())
+                return true
+            }
+        })
 
 
         return rootView
