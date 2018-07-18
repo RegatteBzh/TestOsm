@@ -8,6 +8,9 @@ import android.util.Log
 import android.view.KeyEvent
 import noopy.client.testosm.R
 import noopy.client.testosm.service.MarkerService
+import org.osmdroid.events.MapListener
+import org.osmdroid.events.ScrollEvent
+import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.MapTileProviderBase
 import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase
 import org.osmdroid.util.GeoPoint
@@ -19,6 +22,9 @@ import java.util.regex.Pattern
 class MapMonitor : MapView {
 
     private var boatMarker: Marker = Marker(this)
+    private var eventHandler: Handler? = null
+    private var eventRunnable: Runnable? = null
+    var onMovementEventListener: OnMovementEventListener? = null
 
     constructor(context: Context,
                 tileProvider: MapTileProviderBase,
@@ -73,6 +79,45 @@ class MapMonitor : MapView {
         setMultiTouchControls(true)
         addBoatMarker()
 
+        addMapListener(object : MapListener {
+            override fun onZoom(evt: ZoomEvent): Boolean {
+                MovingMap()
+                return true
+            }
+
+            override fun onScroll(evt: ScrollEvent): Boolean {
+                MovingMap()
+                return true
+            }
+        })
+
+    }
+
+    private fun MovingMap() {
+        if (eventHandler != null && eventRunnable != null) {
+            eventHandler!!.removeCallbacks(eventRunnable);
+        } else {
+            if (onMovementEventListener!= null) onMovementEventListener!!.onMovementStart()
+            startMovements()
+        }
+        eventHandler = Handler()
+        eventRunnable = object: Runnable {
+            override fun run() {
+                eventHandler = null
+                eventRunnable = null
+                if (onMovementEventListener!= null) onMovementEventListener!!.onMovementEnd()
+                stopMovements()
+            }
+        }
+        eventHandler!!.postDelayed(eventRunnable, 300)
+    }
+
+    private fun stopMovements() {
+        Log.i("MAP", "Stop movement")
+    }
+
+    private fun startMovements() {
+        Log.i("MAP", "Start movement")
     }
 
     private fun addBoatMarker() {

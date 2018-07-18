@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import noopy.client.testosm.cache.CacheManager
 import noopy.client.testosm.components.map.MapMonitor
+import noopy.client.testosm.components.map.OnMovementEventListener
 import noopy.client.testosm.components.map.Windy
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapListener
@@ -43,19 +44,20 @@ class MapFragment : Fragment() {
 
         mapComponent?.centerTo(currentPosition)
 
-        if (mapComponent != null) windy = Windy(mapComponent!!)
+        if (mapComponent != null) {
+            windy = Windy(mapComponent!!)
+            mapComponent!!.onMovementEventListener = object: OnMovementEventListener {
+                override fun onMovementStart() {
+                    windy!!.isEnabled = false
+                }
 
-        mapComponent!!.addMapListener(object : MapListener {
-            override fun onZoom(evt: ZoomEvent): Boolean {
-                Log.i("MAP", "Zoom " + evt.toString())
-                return true
+                override fun onMovementEnd() {
+                    windy!!.isEnabled = true
+                    mapComponent!!.invalidate()
+                }
             }
+        }
 
-            override fun onScroll(evt: ScrollEvent): Boolean {
-                Log.i("MAP", "Scroll " + evt.toString())
-                return true
-            }
-        })
 
 
         return rootView
