@@ -18,7 +18,6 @@ class Particle(var pixelPoint: Point, val projection: Projection, var age: Int) 
     }
     set(value: GeoPoint) {
         pixelPoint = projection.toPixels(value, pixelPoint)
-        projection.boundingBox
     }
 
     fun draw(canvas: Canvas) {
