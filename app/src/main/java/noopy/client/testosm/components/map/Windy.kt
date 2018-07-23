@@ -3,6 +3,7 @@ package noopy.client.testosm.components.map
 import android.graphics.Canvas
 import android.graphics.Point
 import android.graphics.Rect
+import android.os.Handler
 import android.util.Log
 import noopy.client.testosm.model.wind.WindSpeed
 import org.osmdroid.util.GeoPoint
@@ -14,6 +15,8 @@ class Windy: Overlay {
 
     var particles: MutableList<Particle> = mutableListOf<Particle>()
     var mapView: MapView? = null
+    val animationInterval: Long = 500
+    private var animationHandler: Handler? = null
 
 
     constructor(mapView: MapView?): super() {
@@ -25,19 +28,42 @@ class Windy: Overlay {
     }
 
     override fun draw(canvas: Canvas, map: MapView, shadow: Boolean) {
+        stopAnimation()
         generateParticles(map.projection.intrinsicScreenRect.width(), map.projection.intrinsicScreenRect.height())
         Log.i("WINDY", "Draw")
-        if (!isEnabled()) return;
+        if (!isEnabled) return
         if (shadow) {
             //draw a shadow if needed, otherwise return
-            return;
+            return
         }
 
         map.getProjection().save(canvas, false, false);
-        particles.forEach {
+        drawParticules(particles, canvas)
+
+        startAnimation(canvas)
+        map.getProjection().restore(canvas, false);
+    }
+
+    fun drawParticules(particleSet: MutableList<Particle>, canvas: Canvas) {
+        particleSet.forEach {
             it.draw(canvas)
         }
-        map.getProjection().restore(canvas, false);
+    }
+
+    fun stopAnimation() {
+        animationHandler?.removeCallbacksAndMessages(null)
+        animationHandler = null
+    }
+
+    fun startAnimation(canvas: Canvas) {
+        animationHandler = Handler()
+        val runnable = object: Runnable{
+            override fun run() {
+                drawParticules(particles, canvas)
+                animationHandler?.postDelayed(this, animationInterval)
+            }
+        }
+        animationHandler?.postDelayed(runnable, animationInterval)
     }
 
     fun generateParticles(width: Int, height: Int) {

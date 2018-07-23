@@ -23,7 +23,6 @@ class MapMonitor : MapView {
 
     private var boatMarker: Marker = Marker(this)
     private var eventHandler: Handler? = null
-    private var eventRunnable: Runnable? = null
     var onMovementEventListener: OnMovementEventListener? = null
 
     constructor(context: Context,
@@ -94,17 +93,16 @@ class MapMonitor : MapView {
     }
 
     private fun MovingMap() {
-        if (eventHandler != null && eventRunnable != null) {
-            eventHandler!!.removeCallbacks(eventRunnable);
+        if (eventHandler != null) {
+            eventHandler!!.removeCallbacksAndMessages(null)
         } else {
             if (onMovementEventListener!= null) onMovementEventListener!!.onMovementStart()
             startMovements()
         }
         eventHandler = Handler()
-        eventRunnable = object: Runnable {
+        val eventRunnable = object: Runnable {
             override fun run() {
                 eventHandler = null
-                eventRunnable = null
                 if (onMovementEventListener!= null) onMovementEventListener!!.onMovementEnd()
                 stopMovements()
             }
