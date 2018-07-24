@@ -22,7 +22,7 @@ class Windy: Overlay {
     constructor(mapView: MapView?): super() {
         Log.i("WINDY", "New windy !")
         if (mapView != null) {
-            addToMap(mapView!!)
+            addToMap(mapView)
             //generateParticles()
         }
     }

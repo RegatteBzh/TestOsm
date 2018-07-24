@@ -13,7 +13,7 @@ class CacheManager {
                 return null
             }
             var success = false
-            val cache_directory = File(context!!.getFilesDir().toString()
+            val cache_directory = File(context.getFilesDir().toString()
                     + File.separator + "cache" + File.separator + name)
             Log.i("CreateDir", cache_directory.toString())
             if (!cache_directory.exists()) {

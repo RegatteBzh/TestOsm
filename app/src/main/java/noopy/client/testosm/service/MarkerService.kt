@@ -20,8 +20,8 @@ class MarkerService(val context: Context) {
 
         if (drawable != null) {
 
-            val height = drawable!!.intrinsicHeight
-            val width = drawable!!.intrinsicWidth
+            val height = drawable.intrinsicHeight
+            val width = drawable.intrinsicWidth
 
             val ratio = mHeight / height.toFloat()
             val scaledHeight = (height.toFloat() * ratio).toInt()
