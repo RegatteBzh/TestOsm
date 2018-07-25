@@ -1,10 +1,10 @@
-package noopy.client.testosm.components.map
+package noopy.client.testosm.model.windy
 
 import android.graphics.Canvas
 import android.graphics.Point
-import android.graphics.Rect
 import android.os.Handler
 import android.util.Log
+import noopy.client.testosm.model.wind.WindMap
 import noopy.client.testosm.model.wind.WindSpeed
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
@@ -17,6 +17,7 @@ class Windy: Overlay {
     var mapView: MapView? = null
     val animationInterval: Long = 500
     private var animationHandler: Handler? = null
+    var windMap: WindMap? = null
 
 
     constructor(mapView: MapView?): super() {
@@ -50,6 +51,24 @@ class Windy: Overlay {
         }
     }
 
+    fun computeParticles(particleSet: MutableList<Particle>) {
+        particleSet.forEach {
+            val point = it.pixelPoint
+            val geoPoint = it.geoPoint
+
+            if (windMap!=null) {
+                val area = mapView!!.projection.boundingBox.latitudeSpan *  mapView!!.projection.boundingBox.longitudeSpan
+                val velocityScale = 0.01 * Math.pow(area, 0.4)
+                val speed = windMap!!.getWindAt(geoPoint)
+                if (speed != null) {
+                    val correctedSpeed = distort(geoPoint, point, velocityScale, speed!!)
+                    val newPoint = XyPoint(point.x + correctedSpeed.u, point.y + correctedSpeed.v)
+                }
+            }
+
+        }
+    }
+
     fun stopAnimation() {
         animationHandler?.removeCallbacksAndMessages(null)
         animationHandler = null
@@ -59,6 +78,7 @@ class Windy: Overlay {
         animationHandler = Handler()
         val runnable = object: Runnable{
             override fun run() {
+                computeParticles(particles)
                 drawParticules(particles, canvas)
                 animationHandler?.postDelayed(this, animationInterval)
             }
@@ -95,13 +115,9 @@ class Windy: Overlay {
         return Point()
     }
 
-    private fun mercy(latitude: Double): Double {
-        return Math.log(Math.tan(latitude / 2 + Math.PI / 4))
-    }
-
-    private fun distortion(latLng: GeoPoint, point: Point): DoubleArray{
+    private fun distortion(latLng: GeoPoint, point: XyPoint): DoubleArray{
         val tau = 2 * Math.PI
-        val H = Math.pow(10.0, -5.2)
+        val H = Math.pow(10.0, -5.2) * 180 / Math.PI
         val hLongitude = if (latLng.longitude<0) H else -H
         val hLatitude = if (latLng.latitude<0) H else -H
 
@@ -118,7 +134,7 @@ class Windy: Overlay {
         )
     }
 
-    private fun distort(latLng: GeoPoint, point: Point, scale: Double, wind: WindSpeed): WindSpeed {
+    private fun distort(latLng: GeoPoint, point: XyPoint, scale: Double, wind: WindSpeed): WindSpeed {
         val u = wind.u * scale;
         val v = wind.v * scale;
         val d = distortion(latLng, point);

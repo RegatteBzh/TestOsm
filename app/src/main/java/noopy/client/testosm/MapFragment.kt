@@ -3,20 +3,15 @@ package noopy.client.testosm
 import android.app.Fragment
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import noopy.client.testosm.cache.CacheManager
 import noopy.client.testosm.components.map.MapMonitor
 import noopy.client.testosm.components.map.OnMovementEventListener
-import noopy.client.testosm.components.map.Windy
+import noopy.client.testosm.model.windy.Windy
 import org.osmdroid.config.Configuration
-import org.osmdroid.events.MapListener
-import org.osmdroid.events.ScrollEvent
-import org.osmdroid.events.ZoomEvent
 import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.overlay.OverlayItem
 
 class MapFragment : Fragment() {
 
